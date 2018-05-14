@@ -2,6 +2,7 @@ import React from 'react';
 import {Table,Row,Col,Card,Modal,Divider,notification,Popconfirm,AutoComplete,Input,Icon,Dropdown,Menu,Button} from 'antd';
 import ConfFrom from './ConfForm';
 import {baseUrl,del,post,get} from '../util';
+import RoleButton from '../roleButton';
 import '../style.css';
 const Option = AutoComplete.Option;
 
@@ -73,8 +74,8 @@ class InvkeGrid extends React.Component{
                         <Button icon="edit" onClick={this.edit(record)} size='small'>修改</Button>
                         <Divider type="vertical"/>
                         <Popconfirm onConfirm={this.delete(record.id)} title="确认删除?">
-                            <Button icon="delete" onClick={null} size='small'>删除</Button>
-
+                            {/*<Button icon="delete" onClick={null} size='small'>删除</Button>*/}
+                            <RoleButton  buttonId={7}/>
                         </Popconfirm>
                     </span>
                 )

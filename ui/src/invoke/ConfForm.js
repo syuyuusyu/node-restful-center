@@ -26,12 +26,6 @@ class ConfForm extends React.Component{
         paramVisible:false,
         queryStr:[],
         currentInvoke:{},
-        parseFunValue:'',
-        bodyValue:'{}',
-        headValue:`{
-    "Accept":"application/json",
-    "Content-Type":"application/json;charset=UTF-8"
-}`
     };
 
     componentWillUnmount(){
@@ -48,9 +42,10 @@ class ConfForm extends React.Component{
                 name:data.name,
                 groupName:data.groupName
             });
-            this.setState({parseFunValue:data.parseFun});
-            this.setState({bodyValue:data.body});
-            this.setState({headValue:data.head});
+            this.funMirrValue=data.parseFun;
+            this.bodyMirrValue=data.body;
+            this.headMirrValue=data.head;
+
         }
         if(this.props.invokeType==='2'){
             this.props.form.setFieldsValue({
@@ -75,7 +70,7 @@ class ConfForm extends React.Component{
     test=()=>{
         this.props.form.validateFields((err,values)=>{
             if(err) return;
-            if(!this.state.headValue || !this.state.bodyValue) return;
+            if(!this.headMirrValue || !this.bodyMirrValue) return;
             values.head=this.headMirrValue;
             values.body=this.bodyMirrValue;
             values.parseFun=this.funMirrValue;
@@ -101,7 +96,7 @@ class ConfForm extends React.Component{
     save=()=>{
         this.props.form.validateFields(async (err,values)=>{
             if(err) return;
-            if(!this.state.headValue || !this.state.bodyValue) return;
+            if(!this.headMirrValue || !this.bodyMirrValue) return;
 
             values.head=this.headMirrValue;
             values.body=this.bodyMirrValue;
@@ -116,6 +111,7 @@ class ConfForm extends React.Component{
             }else{
                 values.next=values.next.reduce((a,b)=>a+','+b);
             }
+            console.log(values);
             this.setState({saveVisible:true});
             let json=await post(`${baseUrl}/invokeInfo/save` , values);
             this.setState({savePercent:75});
@@ -147,8 +143,11 @@ class ConfForm extends React.Component{
     };
 
     funMirrValue;
-    headMirrValue;
-    bodyMirrValue;
+    headMirrValue=`{
+    "Accept":"application/json",
+    "Content-Type":"application/json;charset=UTF-8"
+}`;
+    bodyMirrValue=`{}`;
 
 
 
@@ -240,7 +239,7 @@ class ConfForm extends React.Component{
                             <div>
                                 <div style={{marginBottom:'5px',marginTop:'10px'}}>请求头</div>
                                 <CodeMirror
-                                    value={this.state.headValue}
+                                    value={this.headMirrValue}
                                     options={
                                         {
                                             mode:'json',
@@ -249,6 +248,7 @@ class ConfForm extends React.Component{
                                         }
                                     }
                                     onChange={(editor, data, value) => {
+                                        console.log('onChange head');
                                         this.headMirrValue=value;
                                     }}
                                 />
@@ -258,7 +258,7 @@ class ConfForm extends React.Component{
                             <div>
                                 <div style={{marginBottom:'5px',marginTop:'10px'}}>请求体</div>
                                 <CodeMirror
-                                    value={this.state.bodyValue}
+                                    value={this.bodyMirrValue}
                                     options={
                                         {
                                             mode:'json',
@@ -267,6 +267,7 @@ class ConfForm extends React.Component{
                                         }
                                     }
                                     onChange={(editor, data, value) => {
+                                        console.log('onChange body');
                                         this.bodyMirrValue=value;
                                     }}
                                 />
@@ -277,21 +278,22 @@ class ConfForm extends React.Component{
                         <Col span={24}>
                             <div>
                                 <div style={{marginBottom:'5px',marginTop:'10px'}}>解析函数</div>
-                            <CodeMirror
-                                ref="editorFun"
-                                value={this.state.parseFunValue}
-                                options={
-                                    {
-                                        mode:'javascript',
-                                        theme: 'material',
-                                        lineNumbers: true,
-                                        extraKeys: {"Ctrl": "autocomplete"},
+                                <CodeMirror
+                                    ref="editorFun"
+                                    value={this.funMirrValue}
+                                    options={
+                                        {
+                                            mode:'javascript',
+                                            theme: 'material',
+                                            lineNumbers: true,
+                                            extraKeys: {"Ctrl": "autocomplete"},
+                                        }
                                     }
-                                }
-                                onChange={(editor, data, value) => {
-                                    this.funMirrValue=value;
-                                }}
-                            />
+                                    onChange={(editor, data, value) => {
+                                        console.log('onChange fun');
+                                        this.funMirrValue=value;
+                                    }}
+                                />
                             </div>
                         </Col>
                     </Row>
