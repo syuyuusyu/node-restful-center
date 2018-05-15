@@ -50,63 +50,8 @@ class RestfulController extends Controller{
         this.ctx.body=await this.service.restful.invoke(entity,entity.queryMap);
     }
 
+
     async invoke(){
-        let result=[];
-        const authorToken=this.ctx.request.header['access-token'];
-        let {user}=await this.ctx.service.authorService.getByCode(authorToken);
-        try{
-            const queryMap=this.ctx.request.body;
-            const [entity]=this.app.invokeEntitys.filter(d=>d.name===this.ctx.params.invokeName);
-            //await this.app.mysql.select('invoke_info',{where: {  name: this.ctx.params.invokeName}});
-
-            let nextEntitys=this.app.invokeEntitys.filter(d=>{
-                let flag=false;
-                entity.next.split(',').forEach(i=>{
-                    if(i===d.id+''){
-                        flag=true;
-                    }
-                });
-                return flag;
-            });
-            let promises=nextEntitys.map(entity=>this.service.restful.invoke(entity,queryMap));
-            let p=await Promise.all(promises);
-
-            for(let r of p){
-                const cur={};
-                for(let invokeName in r){
-                    if(invokeName==='msg' || invokeName==='success'){
-                        continue;
-                    }
-                    cur[invokeName]=r[invokeName].result;
-                }
-                result.push(cur);
-            }
-            this.ctx.logger.info('集成就调用结果:',result);
-            if(entity.parseFun){
-                try {
-                    let fn=evil(entity.parseFun);
-                    result=fn(result);
-
-                }catch (e){
-                    this.ctx.logger.error('解析函数运行失败');
-                    this.ctx.logger.info(e);
-                }
-            }else{
-
-            }
-            this.ctx.logger.info('运行解析函数后结果',result);
-            //缓存当次结果
-            this.app.redis.set(user.user_name+this.ctx.params.invokeName,JSON.stringify(result));
-        }catch (exp){
-            this.ctx.logger.error('调用接口失败,通过缓存获取数据');
-            this.ctx.logger.info('调用接口失败',exp.toString());
-            result= await this.service.authorService.getByCode(user.user_name+this.ctx.params.invokeName);
-        }
-
-        this.ctx.body=result;
-    }
-
-    async invoke2(){
         let result=[];
         const queryMap=this.ctx.request.body;
         const [entity]=this.app.invokeEntitys.filter(d=>d.name===this.ctx.params.invokeName);

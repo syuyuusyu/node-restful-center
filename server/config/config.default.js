@@ -16,6 +16,14 @@ module.exports = appInfo => {
 
     ];
 
+    config.cluster = {
+    listen: {
+      port: 7777,
+      //hostname: '127.0.0.1',
+      // path: '/var/run/egg.sock',
+    }
+}
+
 
 
 
@@ -50,14 +58,14 @@ module.exports = appInfo => {
     //     agent: false,
     // };
 
-    config.redis = {
-        client: {
-            port: 6379,          // Redis port
-            host: '127.0.0.1',   // Redis host
-            password: '',
-            db: 0,
-        },
-    };
+    // config.redis = {
+    //     client: {
+    //         port: 6379,          // Redis port
+    //         host: '127.0.0.1',   // Redis host
+    //         password: '',
+    //         db: 0,
+    //     },
+    // };
 
     config.security = {
         csrf: {

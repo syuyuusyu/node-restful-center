@@ -64,7 +64,7 @@ export const log = (target, name, descriptor) => {
   return descriptor;
 };
 
-export const baseUrl='http://192.168.2.166:7001';
+export const baseUrl='http://127.0.0.1:7777';
 //export const baseUrl='';
 //export const baseUrl = 'http://10.10.50.21:7001';
 

@@ -2,7 +2,6 @@ import React from 'react';
 import {Table,Row,Col,Card,Modal,Divider,notification,Popconfirm,AutoComplete,Input,Icon,Dropdown,Menu,Button} from 'antd';
 import ConfFrom from './ConfForm';
 import {baseUrl,del,post,get} from '../util';
-import RoleButton from '../roleButton';
 import '../style.css';
 const Option = AutoComplete.Option;
 
@@ -312,5 +311,3 @@ class InvkeGrid extends React.Component{
 
 
 export default InvkeGrid;
-
-
