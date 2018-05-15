@@ -19,13 +19,13 @@
     float: right;
 }
 
-.CodeMirror {
+/* .CodeMirror {
     border: 1px solid #eee;
-    height: auto;
+    height: 200px;
 }
 
 .CodeMirror-scroll {
-    height: auto;
+    height: 200px;
     overflow-y: hidden;
-    overflow-x: auto;
-}
+    overflow-x: 50px;
+} */
