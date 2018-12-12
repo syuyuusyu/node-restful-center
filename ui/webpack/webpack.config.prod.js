@@ -29,12 +29,6 @@ const prodConfig = {
                     name: "antd",
                     enforce: true
                 },
-                mobx: {
-                    chunks: "initial",
-                    test: "mobx",
-                    name: "mobx",
-                    enforce: true
-                },
                 react: {
                     chunks: "initial",
                     test: "react",

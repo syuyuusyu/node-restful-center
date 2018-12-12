@@ -66,7 +66,7 @@ export const log = (target, name, descriptor) => {
 
 //export const baseUrl='http://127.0.0.1:7777';
 export const baseUrl='';
-//export const baseUrl = 'http://10.10.50.21:7001';
+
 
 
 export  function request2 (method, url, body) {
@@ -101,13 +101,16 @@ export  function request2 (method, url, body) {
         });
 }
 
+
 export function request(method, url, body) {
     method = method.toUpperCase();
+    let params;
     if (method === 'GET') {
         // fetch的GET不允许有body，参数只能放在url中
-        body = undefined;
+        params = body;
+        body=undefined;
     } else {
-        body = body ||{}
+        body = body //&& JSON.stringify(body);
     }
     return axios({
         url:url,
@@ -115,16 +118,19 @@ export function request(method, url, body) {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            //'Access-Token': sessionStorage.getItem('access-token') || '' // 从sessionStorage中获取access token
         },
-        data:body
+        data:body,
+        params:params
     }).then((res) => {
-            if (res.status === 401) {
-                return Promise.reject('Unauthorized.');
-            } else {
-                return res.data;
-            }
-        });
+        if (res.status === 401) {
+            return Promise.reject('Unauthorized.');
+        } else {
+            return res.data;
+        }
+    }).catch((err)=>{
+        window.history.go('/invoke');
+        return Promise.reject('Unauthorized.');
+    });
 }
 
 export const get = url => request('GET', url);

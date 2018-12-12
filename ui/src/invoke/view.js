@@ -56,6 +56,7 @@ class InvkeGrid extends React.Component{
             ],
             onFilter: (value, record) => record.name.includes(value),
         },
+        {dataIndex:'groupName',title:'组名称',width:100},
         {dataIndex:'descrption',title:'描述',width:180},
         {dataIndex:'method',title:'请求方法',width:40},
         {dataIndex:'url',title:'URL',width:200},
@@ -66,14 +67,14 @@ class InvkeGrid extends React.Component{
                 return (
                     <span>
 
+                        {/*<RoleButton onClick={this.edit(record,true)} buttonId={8}/>*/}
                         <Button icon="play-circle-o" onClick={this.edit(record,true)} size='small'>测试</Button>
                         <Divider type="vertical"/>
-
+                        {/*<RoleButton onClick={this.edit(record)} buttonId={6}/>*/}
                         <Button icon="edit" onClick={this.edit(record)} size='small'>修改</Button>
                         <Divider type="vertical"/>
                         <Popconfirm onConfirm={this.delete(record.id)} title="确认删除?">
                             <Button icon="delete" onClick={null} size='small'>删除</Button>
-
                         </Popconfirm>
                     </span>
                 )
@@ -112,10 +113,10 @@ class InvkeGrid extends React.Component{
         this.setState({invokeNames});
         this.setState({filterInvokeNames:invokeNames});
         let json2=await get(`${baseUrl}/invokeInfo/groupName` , );
-        const groupnames=json2.map(o=>({id:o.groupName,name:o.groupName}));
+        const groupnames=json2.map(o=>({id:o.groupName,name:o.groupName})).filter(o=>o.id);
+        groupnames.unshift({id:null,name:null});
         this.setState({groupnames});
         this.setState({filtergroupname:groupnames});
-
     };
 
 
@@ -127,7 +128,7 @@ class InvkeGrid extends React.Component{
 
     filtergroupname=(value)=>{
         let regExp = new RegExp('.*'+value+'.*','i');
-        const filtered=this.state.filtergroupname.filter(o=> regExp.test(o.name));
+        const filtered=this.state.groupnames.filter(o=> regExp.test(o.name));
         this.setState({filtergroupname:filtered});
     };
 
@@ -235,6 +236,7 @@ class InvkeGrid extends React.Component{
                         <AutoComplete style={{ width: '200' }}
                                       className="col-input"
                                       onSearch={this.handleSearch}
+                                      allowClear={true}
                                       placeholder="输入调用名称"
                                       dataSource={this.state.filterInvokeNames.map(o=>{
                                           if(o.id)
@@ -252,7 +254,7 @@ class InvkeGrid extends React.Component{
                         <AutoComplete style={{ width: '200' }}
                                       className="col-input"
                                       onSearch={this.filtergroupname}
-                                      placeholder="输入调用名称"
+                                      placeholder="输入组名称"
                                       dataSource={this.state.filtergroupname.map(o=>{
                                           if(o.id)
                                               return <Option key={o.id} value={o.id+''}>{o.name}</Option>
@@ -274,7 +276,7 @@ class InvkeGrid extends React.Component{
                 </Row>
                 <Modal visible={this.state.confFormvisible}
                        width={1200}
-                       title="接口配置"
+                       title="原生接口配置"
                        footer={null}
                        onCancel={this.taggleConfForm}
                        maskClosable={false}
@@ -284,7 +286,7 @@ class InvkeGrid extends React.Component{
                 </Modal>
                 <Modal visible={this.state.invokeFormvisibele}
                        width={1200}
-                       title="可调用接口"
+                       title="封装接口配置"
                        footer={null}
                        onCancel={this.toggleinvokeFormvisibele}
                        maskClosable={false}
@@ -299,7 +301,7 @@ class InvkeGrid extends React.Component{
                        size="small"
                        scroll={{ y: 800 }}
                        expandedRowRender={this.expandedRowRender}
-                    pagination={this.state.pagination}
+                       pagination={this.state.pagination}
                        loading={this.state.loading}
                        onChange={this.handleTableChange}
                 />
@@ -310,3 +312,6 @@ class InvkeGrid extends React.Component{
 
 
 export default InvkeGrid;
+
+
+

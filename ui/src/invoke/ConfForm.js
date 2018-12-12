@@ -111,7 +111,6 @@ class ConfForm extends React.Component{
             }else{
                 values.next=values.next.reduce((a,b)=>a+','+b);
             }
-            console.log(values);
             this.setState({saveVisible:true});
             let json=await post(`${baseUrl}/invokeInfo/save` , values);
             this.setState({savePercent:75});
@@ -150,10 +149,8 @@ class ConfForm extends React.Component{
     bodyMirrValue=`{}`;
 
 
-
     render() {
         const { getFieldDecorator, } = this.props.form;
-
         return (
             <div>
                 <Modal key="saveStatus" visible={this.state.saveVisible} footer={null}>
@@ -214,7 +211,7 @@ class ConfForm extends React.Component{
                                 {getFieldDecorator('next',{
                                     rules: [{ required: this.props.invokeType==='2'?true:false, message: '此项为必填项!!' }],
                                 })(
-                                    <Select  onChange={null}  mode="multiple">
+                                    <Select  onChange={null}  mode="multiple" optionFilterProp="children">
                                         {
                                             this.state.next.map((o,i)=><Option key={o.id}>{o.name}</Option>)
                                         }

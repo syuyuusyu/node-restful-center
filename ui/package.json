@@ -6,7 +6,7 @@
   "author": "syu",
   "license": "MIT",
   "dependencies": {
-    "antd": "^3.5.0",
+    "antd": "^3.11.0",
     "axios": "^0.18.0",
     "codemirror": "^5.36.0",
     "react": "^16.3.1",
@@ -67,7 +67,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src --ext .js",
     "dev-build": "webpack --mode=development --config webpack.config.dev.js",
-    "start": "webpack-dev-server --config ./webpack/webpack.config.dev.js --display-modules",
+    "start": "webpack-dev-server --config ./webpack/webpack.config.prod.js --display-modules",
+    "dev-start": "webpack-dev-server --config ./webpack/webpack.config.dev.js --display-modules",
     "build": "webpack --mode=production --config ./webpack/webpack.config.prod.js --display-modules --sort-modules-by size --progress"
   }
 }

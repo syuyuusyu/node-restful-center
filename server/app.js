@@ -27,7 +27,7 @@ module.exports = app => {
           await app.mysql.query(sql);
         }
         //初始化接口调用实体
-        app.invokeEntitys=await app.mysql.query(`select * from invoke_info`);
+        let invokeEntitys=await app.mysql.query(`select * from invoke_info`);
 
 
         console.log('app start');
@@ -36,5 +36,10 @@ module.exports = app => {
 
     app.once('server', server => {
         //app.logger.info(server.restful);
+    });
+
+    app.messenger.on('invokeEntitys', data => {
+        console.log('entityCache');
+        app.invokeEntitys=invokeEntitys;
     });
 };

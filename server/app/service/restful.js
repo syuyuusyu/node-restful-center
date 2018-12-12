@@ -15,8 +15,22 @@ class RestfulService extends Service{
         return result;
     }
 
-    async _invoke(entity,queryObj,count, result){
-        const invokeName=entity.name+'-'+count;
+    async invoke(entity,queryObj){
+        let count=1,
+            recursionLevel=1,
+            lastinvokeName=entity.name,
+            result={};
+
+        await this._invoke(entity,queryObj,count,result,recursionLevel,lastinvokeName);
+        return result;
+    }
+
+    async _invoke(entity,queryObj,count, result,recursionLevel,lastinvokeName){
+        let invokeName='';
+        (lastinvokeName+'-'+count).replace(/(?=\S+)((?:-\d+)+)/,(w,p1)=>{
+            invokeName=entity.name+p1;
+            return entity.name+p1;
+        });
         result[invokeName]={};
         let url=this.parseByqueryMap(entity.url,queryObj);
         let method=entity.method.toUpperCase();
@@ -25,8 +39,9 @@ class RestfulService extends Service{
         let head=this.parseByqueryMap(entity.head,queryObj);
         head=JSON.parse(head);
         this.ctx.logger.info('url:',url);
-        this.ctx.logger.info('head:',head);
-        this.ctx.logger.info('body:',data);
+        // this.ctx.logger.info('method:',method);
+        // this.ctx.logger.info('head:',head);
+        // this.ctx.logger.info('body:',data);
 
 
         let invokeResult;
@@ -40,13 +55,13 @@ class RestfulService extends Service{
             });
         }catch (e){
             this.ctx.logger.error('调用接口错误!!',url);
-            this.ctx.logger.info(invokeResult);
+            //this.ctx.logger.info(invokeResult);
             this.ctx.logger.info(e);
             throw e;
 
         }
-        this.ctx.logger.info('status',invokeResult.status);
-        this.ctx.logger.info('result',invokeResult.data);
+        //this.ctx.logger.info('status',invokeResult.status);
+        //this.ctx.logger.info('result',invokeResult.data);
         if(entity.parseFun){
             try {
                 let fn=evil(entity.parseFun);
@@ -56,7 +71,7 @@ class RestfulService extends Service{
             }catch (e){
                 this.ctx.logger.error('运行解析函数错误');
                 this.ctx.logger.info('response,responsehead,responsestatus,requesthead,requestdata,url');
-                this.ctx.logger.info('解析参数\n',invokeResult.data,'\n',invokeResult.headers,'\n',invokeResult.status,'\n',head,'\n',data,'\n',url);
+                this.ctx.logger.info('解析参数\n','----->\n',invokeResult.data,'\n',invokeResult.headers,'\n',invokeResult.status,'\n',head,'\n',data,'\n',url,'<------\n');
                 this.ctx.logger.info('解析析函',entity.parseFun);
                 result[invokeName].result=invokeResult.data;
             }
@@ -68,19 +83,22 @@ class RestfulService extends Service{
         result[invokeName].head=head;
         result[invokeName].url=url;
         if(entity.next && result[invokeName].result.map ){
-            let nextEntitys=//await this.app.mysql.select('invoke_info',{where: {  id: entity.next.split(',') }});
-                    this.app.invokeEntitys.filter(d=>{
-                        let flag=false;
-                        entity.next.split(',').forEach(i=>{
-                            if(i===d.id+''){
-                                flag=true;
-                            }
-                        });
-                        return flag;
+            recursionLevel++;
+            const invokeEntitys=this.app.invokeEntitys;
+            let nextEntitys=//await this.app.mysql.select('t_invoke_info',{where: {  id: entity.next.split(',') }});
+                invokeEntitys.filter(d=>{
+                    let flag=false;
+                    entity.next.split(',').forEach(i=>{
+                        if(i===d.id+''){
+                            flag=true;
+                        }
                     });
+                    return flag;
+                });
+
             for(let netxEn of nextEntitys){
                 let currentCount=count;
-                let promises=result[entity.name+'-'+count].result.map(r=> {
+                let promises=result[invokeName].result.map(r=> {
                     currentCount++;
                     let currentQurtyObj = {};
                     Object.assign(currentQurtyObj, queryObj);
@@ -90,7 +108,7 @@ class RestfulService extends Service{
                             currentQurtyObj[p] = r[p];
                         }
                     });
-                    return this._invoke(netxEn, currentQurtyObj, currentCount, result);
+                    return this._invoke(netxEn, currentQurtyObj, currentCount, result,recursionLevel,invokeName);
 
                 });
                 await Promise.all(promises);
