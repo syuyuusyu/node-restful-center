@@ -12,20 +12,15 @@ module.exports = appInfo => {
     config.keys = appInfo.name + '_1517886399328_119';
 
     // add your config here
-    config.middleware = [
-
-    ];
+    config.middleware = [];
 
     config.cluster = {
-    listen: {
-      port: 7777,
-      //hostname: '127.0.0.1',
-      // path: '/var/run/egg.sock',
-    }
-}
-
-
-
+        listen: {
+            port: 7777,
+            //hostname: '127.0.0.1',
+            // path: '/var/run/egg.sock',
+        }
+    };
 
     config.mysql = {
         client: {
@@ -38,25 +33,13 @@ module.exports = appInfo => {
             // 密码
             password: '1234',
             // 数据库名
-            database: 'isp',
+            database: 'elemental',
         },
         // 是否加载到 app 上，默认开启
         app: true,
         // 是否加载到 agent 上，默认关闭
-        agent: false,
+        agent: true,
     };
-
-    // config.mysql={
-    //     client: {
-    //         host: '127.0.0.1',
-    //         port: '3306',
-    //         user: 'root',
-    //         password: '1234',
-    //         database: 'isp',
-    //     },
-    //     app: true,
-    //     agent: false,
-    // };
 
     // config.redis = {
     //     client: {
@@ -74,12 +57,12 @@ module.exports = appInfo => {
         },
         // csrf:false,
         // debug:'csrf-disable',
-        domainWhiteList: ['http://localhost:3000','http://1270.0.0.1:3000']
+        domainWhiteList: ['http://localhost:3000', 'http://1270.0.0.1:3000']
     };
 
     config.cors = {
         allowMethods: 'GET,PUT,POST,DELETE,OPTIONS',
-        origin:'*',
+        origin: '*',
     };
 
 

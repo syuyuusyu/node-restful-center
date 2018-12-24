@@ -19,6 +19,12 @@ module.exports = app => {
     router.get('/invokeInfo/checkUnique/:invokeName',controller.restful.checkUnique);
     router.get('/invokeInfo/groupName',controller.restful.groupName);
 
+    //mock
+    router.post('/v3/auth/tokens',controller.mock.openstack_token);
+    router.get('/v2.1/servers',controller.mock.servicesList);
+    router.get('/v1/resource/instance/:instanceId',controller.mock.instance);
+    router.get('/v1/metric/:propertyId/measures',controller.mock.measures);
+
 
 
 };
