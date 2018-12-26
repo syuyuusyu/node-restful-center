@@ -49,16 +49,16 @@ body:
 在页面上点击***keystoneToken***一列的"修改"按钮可进入如下配置页面,图1
 ![图1](./readmePic/token.png)
 
-配置参数中的**@**为占位符,在调用时需要用具体的参数替换,点击上图页面的"测试"按钮,将出现如下页面:图2  
+配置参数中的@为占位符,在调用时需要用具体的参数替换,点击上图页面的"测试"按钮,将出现如下页面:图2  
 ![](./readmePic/params.png)
-这里出现的是用**@**占位符标记的参数,在/node-restful-center/server/app/controller/mock.js中,mock了一份调用接口所需的数据,所以这里的keystoneIP就是本地服务的地址127.0.0.1:7777,同时由于mock的关系,name和password可以随便填,在不选中"是否关联调用"的情况下,点击上图页面的"测试",将调用该接口并出现如下页面:图3
+这里出现的是用@占位符标记的参数,在/node-restful-center/server/app/controller/mock.js中,mock了一份调用接口所需的数据,所以这里的keystoneIP就是本地服务的地址127.0.0.1:7777,同时由于mock的关系,name和password可以随便填,在不选中"是否关联调用"的情况下,点击上图页面的"测试",将调用该接口并出现如下页面:图3
 ![](./readmePic/invokeResult.png)
 这个页面除了展示模拟(请求由后台程序调用,并不是页面请求的)请求返回的结果,主要是用来测试解析函数的,下面就介绍解析下解析函数的用法,  
 解析函数接收如下参数:responsebody,responsehead,responsestatus,requesthead,requestdata,url,这几个参数按照字面意思比较好理解,整个解析函数的目的就是让使用者按照自己的业务需求,将上面几个参数中的信息重新组合,转换得到更易读或其他调用程序更好理解的JSON格式,解析函数支持ES6语法,图3的解析函数很简单,就是获取响应头中'x-subject-token'中的token,并按照`[{token:'XXXX'}]`的格式返回,需要特别说明的是,在页面模拟调用的环境中,页面只能得到responsebody这一个参数,其他的参数只有在后台程序调用中才能得到,所以如果现在点击图3的"测试解析函数"按钮,将会得到一个head undefined的异常;
 回到图1的页面,将"关联请求"一项中的***server_list***勾选去掉,并在图二的页面选中"是否关联调用",点击测试,将得到如下页面:图4  
 ![图4](./readmePic/reInvokeResult.png)
 可以看到返回结果变成了解析函数处理后的形式,图二中的"是否关联调用"如果选中,那么程序将在后台调用解析函数(如上面的介绍,后台程序才能得到responsehead),同时,如果图1页面中"关联请求"一项中的***server_list***在勾选状态的话,在获取到token后,程序会继续调用***server_list***接口,该接口的配置信息如下:图5  
-![图5](./readmePic/serverlist.png)
+![图5](./readmePic/serverlist.png)  
 ***server_list***用来查询toekn对应用户的云机列表,在图5的配置中,需要两个参数(使用@占位):ComputeIP,token,这里的token已经在上一步的调用中得到,但ComputeIP还未知,所以这时关联调用***server_list***接口的话,程序会报错,当然也可以直接吧ComputeIP写死在***server_list***的配置中,这样就可以直接经行关联调用了;
 现在单独调用***server_list***接口,在图5页面点击"测试"按钮,在弹出的对话框中填写token和ComputeIP(mock环境下仍然是127.0.0.1:7777),获得如下响应:
 ```
