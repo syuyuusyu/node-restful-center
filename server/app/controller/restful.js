@@ -55,6 +55,14 @@ class RestfulController extends Controller{
         let result=[];
         const queryMap=this.ctx.request.body;
         const [entity]=this.app.invokeEntitys.filter(d=>d.name===this.ctx.params.invokeName);
+        let entitybody={};
+        if(entity.body){
+            try{
+                entitybody=JSON.parse(entity.body);
+            }catch (e){
+                entitybody={};
+            }
+        }
         //await this.app.mysql.select('invoke_info',{where: {  name: this.ctx.params.invokeName}});
 
         let nextEntitys=this.app.invokeEntitys.filter(d=>{
@@ -66,7 +74,7 @@ class RestfulController extends Controller{
             });
             return flag;
         });
-        let promises=nextEntitys.map(entity=>this.service.restful.invoke(entity,queryMap));
+        let promises=nextEntitys.map(entity=>this.service.restful.invoke(entity,{...entitybody,...queryMap}));
         let p=await Promise.all(promises);
 
         for(let r of p){
