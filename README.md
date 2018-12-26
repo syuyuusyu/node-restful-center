@@ -159,7 +159,7 @@ function parse(obj){
 ```
 结果中的`"vcpus": "ad8826fe-f9fc-41a8-b467-76a501e52dda"`,就是下一个接口**monitor_detail**所需的参数propertyId,同样使用对应的解析函数处理过上面的JSON后,处理后的结果作为参数用来调用**monitor_detail**接口.  
 这时对于接口调用相关的配置就完成了,其实也就是配置每个接口的url,head,body和解析函数,用@站位符替代调用时传入的参数,用解析函数将调用返回的信息转化为自己需要的格式,同时配置关联调用的接口,这样在当前调用结束后,将当前调用获得的信息作为关联调用所需的参数再去调用关联的接口,在上面的列子中就是这样的调用顺序:**keystoneToken**->**server_list**->**monitor_info**->**monitor_detail**  
-接下来需要配置一个"可调用接口"(这里已经配置好一个 **monitor_api** ),"可调用接口"是由程序发布出来的一个POST接口,可以通过http://{本机IP}:7777/invoke/{可调用接口名称}来访问,在这里就是http://127.0.0.1:7777/invoke/monitor_api  
+接下来需要配置一个"可调用接口"(这里已经配置好一个**monitor_api**),"可调用接口"是由程序发布出来的一个POST接口,可以通过http://{本机IP}:7777/invoke/{可调用接口名称}来访问,在这里就是http://127.0.0.1:7777/invoke/monitor_api  
 在调用**monitor_api**时,就可以在请求体中传入其关联接口所需的参数,对于当前的列子,就是
 ```
 {
@@ -170,7 +170,7 @@ function parse(obj){
 	"ComputeIP":"127.0.0.1:7777"
 }
 ```
-可以看到**monitor_api**的关联接口是**keystoneToken**,也就是说当调用**monitor_api**时,程序会去调用**keystoneToken**,调用***keystoneToken***完成后,又会去调用**keystoneToken**的关联接口,当所有的接口都完成调用时,所有结果组成一个大的JSON,作为**monitor_api**的结果返回,返回示列如下(有所省略):  
+可以看到**monitor_api**的关联接口是**keystoneToken**,也就是说当调用**monitor_api**时,程序会去调用**keystoneToken**,调用**keystoneToken**完成后,又会去调用**keystoneToken**的关联接口,当所有的接口都完成调用时,所有结果组成一个大的JSON,作为**monitor_api**的结果返回,返回示列如下(有所省略):  
 ```
 [
     {
