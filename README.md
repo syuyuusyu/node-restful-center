@@ -218,5 +218,36 @@ function parse(obj){
     }
 ]
 ```  
-返回的内容按照接口名称+后缀数字来展示,在这里后缀的数字只是为了保证名称的唯一,并没有实际意义,前面说过,由于**server_list**返回3组数据,所以**monitor_info**会被调用3次,其关联的**monitor_detail**又会根据不同的*propertyId*再被调用多次,所以这里返回的结果是一个很大的JSON,虽然很大,但已经包含了业务所需的所有信息,接下来只要为**monitor_api**配置解析函数,将上面的JSON转换为想要的结果就可以了.  
-到此,整个接口的封装就完成了,以后只要直接调用**monitor_api**就可以得到所需的云机状态信息了,如果有实际的openstack环境,那么只要把**monitor_api**请求体中参数(keystoneIP,MetricIP)等换成实际的值,就可以得到实际环境下的结果了.
+返回的内容按照接口名称+后缀数字来展示,在这里后缀的数字只是为了保证名称的唯一,并没有实际意义,前面说过,由于**server_list**返回3组数据,所以**monitor_info**会被调用3次,其关联的**monitor_detail**又会根据不同的*propertyId*再被调用多次,所以这里返回的结果是一个很大的JSON,虽然很大,但已经包含了业务所需的所有信息,接下来只要为**monitor_api**配置解析函数,将上面的JSON转换为想要的结果就可以了.通过**monitor_detail**的解析函数,得到下面的结果:  
+```
+[
+    {
+        "instanceName": "S01002",
+        "disk.usage": 0,
+        "disk.root.size": "100.00",
+        "memory.usage": "3016.53",
+        "memory": "16384.00",
+        "cpu_util": "0.08",
+        "vcpus": "4.00"
+    },
+    {
+        "instanceName": "S01003",
+        "disk.usage": 0,
+        "disk.root.size": "100.00",
+        "memory.usage": "5156.49",
+        "memory": "16384.00",
+        "cpu_util": "0.59",
+        "vcpus": "4.00"
+    },
+    {
+        "instanceName": "S01001",
+        "disk.usage": 0,
+        "disk.root.size": "100.00",
+        "memory.usage": "1870.27",
+        "memory": "16384.00",
+        "cpu_util": "0.21",
+        "vcpus": "4.00"
+    }
+]  
+```
+这就是最终的结果,包含了云机的名称,vcpu数量,内存使用量等,到此,整个接口的封装就完成了,以后只要直接调用**monitor_api**就可以得到所需的云机状态信息了,如果有实际的openstack环境,那么只要把**monitor_api**请求体中参数(keystoneIP,MetricIP)等换成实际的值,就可以得到实际环境下的结果了.
