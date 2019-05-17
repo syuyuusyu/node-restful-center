@@ -54,7 +54,14 @@ class RestfulController extends Controller{
     async invoke(){
         let result=[];
         const queryMap=this.ctx.request.body;
-        const [entity]=this.app.invokeEntitys.filter(d=>d.name===this.ctx.params.invokeName);
+        let invokeEntitys;
+        if(this.app.config.redis.client){
+            const json = await this.app.redis.get(k);
+            invokeEntitys = JSON.parse(json);
+        }else{
+            invokeEntitys = this.app.invokeEntitys
+        }
+        const [entity]= invokeEntitys.filter(d=>d.name===this.ctx.params.invokeName);
         let entitybody={};
         if(entity.body){
             try{
@@ -65,7 +72,7 @@ class RestfulController extends Controller{
         }
         //await this.app.mysql.select('invoke_info',{where: {  name: this.ctx.params.invokeName}});
 
-        let nextEntitys=this.app.invokeEntitys.filter(d=>{
+        let nextEntitys= invokeEntitys.filter(d=>{
             let flag=false;
             entity.next.split(',').forEach(i=>{
                 if(i===d.id+''){
@@ -133,8 +140,13 @@ class RestfulController extends Controller{
 
     async reflashEntity(){
         console.log('reflashEntity');
-        const invokeEntitys=await this.app.mysql.query('select * from invoke_info');
-        this.app.messenger.sendToAgent('invokeEntitys',invokeEntitys);
+        const invokeEntitys=await app.mysql.query(`select * from invoke_info`);
+        if(this.app.config.redis.client){
+            await this.app.redis.set('invokeEntitys', JSON.stringify(invokeEntitys));
+        }else{
+            this.app.messenger.sendToAgent('invokeEntitys',invokeEntitys);
+        }
+
     }
 
     async groupName(){

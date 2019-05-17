@@ -20,22 +20,22 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 --  Table structure for `invoke_info`
 -- ----------------------------
-DROP TABLE IF EXISTS `invoke_info`;
-CREATE TABLE `invoke_info` (
-  `id` int(4) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) DEFAULT NULL,
-  `descrption` varchar(200) DEFAULT NULL,
-  `method` varchar(10) DEFAULT NULL,
-  `url` varchar(200) DEFAULT NULL,
-  `head` text DEFAULT NULL,
-  `body` text DEFAULT NULL,
-  `parseFun` text DEFAULT NULL,
-  `orginalResult` longtext DEFAULT NULL,
-  `next` varchar(50) DEFAULT NULL,
-  `invokeType` char(1) DEFAULT NULL COMMENT '1:接口调用配置,2:可调用接口',
-  `groupName` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+-- DROP TABLE IF EXISTS `invoke_info`;
+-- CREATE TABLE `invoke_info` (
+--   `id` int(4) NOT NULL AUTO_INCREMENT,
+--   `name` varchar(100) DEFAULT NULL,
+--   `descrption` varchar(200) DEFAULT NULL,
+--   `method` varchar(10) DEFAULT NULL,
+--   `url` varchar(200) DEFAULT NULL,
+--   `head` text DEFAULT NULL,
+--   `body` text DEFAULT NULL,
+--   `parseFun` text DEFAULT NULL,
+--   `orginalResult` longtext DEFAULT NULL,
+--   `next` varchar(50) DEFAULT NULL,
+--   `invokeType` char(1) DEFAULT NULL COMMENT '1:接口调用配置,2:可调用接口',
+--   `groupName` varchar(50) DEFAULT NULL,
+--   PRIMARY KEY (`id`)
+-- ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 -- ----------------------------
 --  Records of `invoke_info`

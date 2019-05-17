@@ -28,11 +28,14 @@ module.exports = agent => {
             await agent.mysql.query(sql);
         }
 
-        //初始化接口调用实体
-        const invokeEntitys=await agent.mysql.query(`select * from invoke_info`);
-        agent.messenger.sendToApp('invokeEntitys', invokeEntitys);
 
-        agent.messenger.on('invokeEntitys',data=>agent.messenger.sendToApp('invokeEntitys', data));
+        if(!agent.config.redis.client){
+            //初始化接口调用实体
+            const invokeEntitys=await agent.mysql.query(`select * from invoke_info`);
+            agent.messenger.sendToApp('invokeEntitys', invokeEntitys);
+            agent.messenger.on('invokeEntitys',data=>agent.messenger.sendToApp('invokeEntitys', data));
+        }
+
 
 
     });
