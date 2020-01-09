@@ -56,7 +56,7 @@ class RestfulController extends Controller{
         const queryMap=this.ctx.request.body;
         let invokeEntitys;
         if(this.app.config.redis.client){
-            const json = await this.app.redis.get(k);
+            const json = await this.app.redis.get('invokeEntitys');
             invokeEntitys = JSON.parse(json);
         }else{
             invokeEntitys = this.app.invokeEntitys

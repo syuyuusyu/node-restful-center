@@ -10,13 +10,6 @@ class RestfulService extends Service{
 
     async invoke(entity,queryObj){
         let count=1,
-            result={};
-        await this._invoke(entity,queryObj,count,result);
-        return result;
-    }
-
-    async invoke(entity,queryObj){
-        let count=1,
             recursionLevel=1,
             lastinvokeName=entity.name,
             result={};
