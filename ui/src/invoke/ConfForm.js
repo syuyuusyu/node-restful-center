@@ -1,8 +1,8 @@
 import React from 'react';
-import { Form, Row, Col, Input, Button ,Select,Modal,Progress} from 'antd';
+import { Form, Row, Col, Input, Button, Select, Modal, Progress } from 'antd';
 import ParamsForm from './ParamsForm';
-import {baseUrl, get,post} from "../util";
-import {UnControlled as CodeMirror} from 'react-codemirror2'
+import { baseUrl, get, post } from "../util";
+import { UnControlled as CodeMirror } from 'react-codemirror2'
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/addon/hint/show-hint.css';
 import 'codemirror/addon/hint/show-hint.js';
@@ -13,78 +13,87 @@ import 'codemirror/theme/ambiance.css';
 import '../style.css';
 const FormItem = Form.Item;
 const Option = Select.Option;
-const {TextArea}=Input;
+const { TextArea } = Input;
 
 
 
-class ConfForm extends React.Component{
+class ConfForm extends React.Component {
     state = {
-        next:[],
-        saveVisible:false,
-        savePercent:0,
-        saveStatus:'active',
-        paramVisible:false,
-        queryStr:[],
-        currentInvoke:{},
+        next: [],
+        saveVisible: false,
+        savePercent: 0,
+        saveStatus: 'active',
+        paramVisible: false,
+        queryStr: [],
+        currentInvoke: {},
+        systemInfo: [],
     };
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         //this.props.close=null;
     }
-    async componentDidMount(){
-        if(this.props.data){
-            const data=this.props.data;
+    async componentDidMount() {
+        await this.loadSystemInfo();
+        console.log(this.state.systemInfo)
+        if (this.props.data) {
+            const data = this.props.data;
             this.props.form.setFieldsValue({
-                method:data.method,
-                next:data.next?data.next.split(','):[],
-                descrption:data.descrption,
-                url:data.url,
-                name:data.name,
-                groupName:data.groupName
+                method: data.method,
+                next: data.next ? data.next.split(',') : [],
+                descrption: data.descrption,
+                url: data.url,
+                name: data.name,
+                groupName: data.groupName,
+                systemId: this.state.systemInfo.find(s => s.systemId == data.systemId).name
             });
-            this.funMirrValue=data.parseFun;
-            this.bodyMirrValue=data.body;
-            this.headMirrValue=data.head;
+            this.funMirrValue = data.parseFun;
+            this.bodyMirrValue = data.body;
+            this.headMirrValue = data.head;
 
         }
-        if(this.props.invokeType==='2'){
+        if (this.props.invokeType === '2') {
             this.props.form.setFieldsValue({
-                method:'post',
+                method: 'post',
             });
         }
-        let json=await post(`${baseUrl}/invokeInfo/invokes` ,{});
-        json=json.map(o=>({
-            id:o.id,name:o.name
+        let json = await post(`${baseUrl}/invokeInfo/invokes`, {});
+        json = json.map(o => ({
+            id: o.id, name: o.name
         }));
-        this.setState({next:json});
+        this.setState({ next: json });
     };
 
-    async componentWillReceiveProps(){
+    async componentWillReceiveProps() {
 
     };
 
-    taggleParamForm=()=>{
-        this.setState({paramVisible:!this.state.paramVisible})
+    taggleParamForm = () => {
+        this.setState({ paramVisible: !this.state.paramVisible })
     };
 
-    test=()=>{
-        this.props.form.validateFields((err,values)=>{
-            if(err) return;
-            if(!this.headMirrValue || !this.bodyMirrValue) return;
-            values.head=this.headMirrValue;
-            values.body=this.bodyMirrValue;
-            values.parseFun=this.funMirrValue;
-            if(values.next && values.next.length===0){
+    loadSystemInfo = async () => {
+        let json = await get(`${baseUrl}/systemInfo`);
+        //let json=await response.json();
+        this.setState({ systemInfo: json });
+    };
+    test = () => {
+        this.props.form.validateFields((err, values) => {
+            if (err) return;
+            if (!this.headMirrValue || !this.bodyMirrValue) return;
+            values.head = this.headMirrValue;
+            values.body = this.bodyMirrValue;
+            values.parseFun = this.funMirrValue;
+            if (values.next && values.next.length === 0) {
                 delete values.next;
-            }else if(values.next && values.next.length>0){
-                values.next=values.next.reduce((a,b)=>a+','+b);
+            } else if (values.next && values.next.length > 0) {
+                values.next = values.next.reduce((a, b) => a + ',' + b);
             }
-            this.setState({currentInvoke:values});
+            this.setState({ currentInvoke: values });
             let queryStr = [];
             (values.url + values.head + values.body).replace(/@(\w+)/g, function (w, p1) {
                 queryStr.push(p1);
             });
-            this.setState({queryStr});
+            this.setState({ queryStr });
             this.taggleParamForm();
         });
     };
@@ -93,31 +102,39 @@ class ConfForm extends React.Component{
         this.props.form.resetFields();
     };
 
-    save=()=>{
-        this.props.form.validateFields(async (err,values)=>{
-            if(err) return;
-            if(!this.headMirrValue || !this.bodyMirrValue) return;
+    save = () => {
+        this.props.form.validateFields(async (err, values) => {
+            if (err) return;
+            if (!this.headMirrValue || !this.bodyMirrValue) return;
 
-            values.head=this.headMirrValue;
-            values.body=this.bodyMirrValue;
-            values.parseFun=this.funMirrValue;
-            if(this.props.data){
-                values.id=this.props.data.id;
+            values.head = this.headMirrValue;
+            values.body = this.bodyMirrValue;
+            values.parseFun = this.funMirrValue;
+            if (this.props.data) {
+                values.id = this.props.data.id;
             }
-            values.next=values.next?values.next:[];
-            values.invokeType=this.props.invokeType;
-            if(values.next.length===0){
+            values.next = values.next ? values.next : [];
+            values.invokeType = this.props.invokeType;
+            console.log(this.state.systemInfo);
+            console.log(values);
+            let sys = this.state.systemInfo.find(s => s.name == values.systemId);
+            if (!sys) {
+                sys = this.state.systemInfo.find(s => s.systemId == values.systemId);
+            }
+            values.systemId = sys.systemId;
+            if (values.next.length === 0) {
                 delete values.next;
-            }else{
-                values.next=values.next.reduce((a,b)=>a+','+b);
+            } else {
+                values.next = values.next.reduce((a, b) => a + ',' + b);
             }
-            this.setState({saveVisible:true});
-            let json=await post(`${baseUrl}/invokeInfo/save` , values);
-            this.setState({savePercent:75});
-            if(json.success){
-                this.setState({savePercent:100,saveStatus:'success'});
-            }else{
-                this.setState({savePercent:100,saveStatus:'exception'});
+            this.setState({ saveVisible: true });
+
+            let json = await post(`${baseUrl}/invokeInfo/save`, values);
+            this.setState({ savePercent: 75 });
+            if (json.success) {
+                this.setState({ savePercent: 100, saveStatus: 'success' });
+            } else {
+                this.setState({ savePercent: 100, saveStatus: 'exception' });
             }
             //setTimeout(()=>{this.setState({saveVisible:false})},2000);
             this.props.close();
@@ -125,28 +142,28 @@ class ConfForm extends React.Component{
         })
     };
 
-    checkUnique=async(rule, value, callback)=>{
-        if(this.props.data){
-            if(this.props.data.name===value){
+    checkUnique = async (rule, value, callback) => {
+        if (this.props.data) {
+            if (this.props.data.name === value) {
                 callback();
             }
         }
-        let json=await get(`${baseUrl}/invokeInfo/checkUnique/${value}`);
+        let json = await get(`${baseUrl}/invokeInfo/checkUnique/${value}`);
         //let json=await response.json();
-        if(json.total===0){
+        if (json.total === 0) {
             callback();
-        }else{
+        } else {
             callback(new Error());
         }
 
     };
 
     funMirrValue;
-    headMirrValue=`{
+    headMirrValue = `{
     "Accept":"application/json",
     "Content-Type":"application/json;charset=UTF-8"
 }`;
-    bodyMirrValue=`{}`;
+    bodyMirrValue = `{}`;
 
 
     render() {
@@ -154,20 +171,36 @@ class ConfForm extends React.Component{
         return (
             <div>
                 <Modal key="saveStatus" visible={this.state.saveVisible} footer={null}>
-                    <Progress type="circle" percent={this.state.savePercent} status={this.state.saveStatus}  />
+                    <Progress type="circle" percent={this.state.savePercent} status={this.state.saveStatus} />
                 </Modal>
-                <Modal visible={this.state.paramVisible} footer={null}  onCancel={this.taggleParamForm}
-                       maskClosable={false}
-                       destroyOnClose={true}>
-                    <ParamsForm invokeType={this.props.invokeType} params={this.state.queryStr} currentInvoke={this.state.currentInvoke}/>
+                <Modal visible={this.state.paramVisible} footer={null} onCancel={this.taggleParamForm}
+                    maskClosable={false}
+                    destroyOnClose={true}>
+                    <ParamsForm invokeType={this.props.invokeType} params={this.state.queryStr} currentInvoke={this.state.currentInvoke} />
                 </Modal>
                 <Form>
                     <Row gutter={24}>
                         <Col span={6}>
+                            <FormItem label="调用系统">
+                                {getFieldDecorator('systemId', {
+                                    rules: [{ required: true, message: '此项为必填项!!' }],
+
+                                })(
+                                    <Select onChange={null}>
+                                        {
+                                            this.state.systemInfo.map((o, i) => <Select.Option key={o.systemId}>{o.name}</Select.Option>)
+                                        }
+                                    </Select>
+                                )}
+                            </FormItem>
+                        </Col>
+                    </Row>
+                    <Row gutter={24}>
+                        <Col span={6}>
                             <FormItem label="调用名称">
-                                {getFieldDecorator('name',{
+                                {getFieldDecorator('name', {
                                     rules: [{ validator: this.checkUnique, message: '调用名称必须唯一', }],
-                                    validateTrigger:'onBlur'
+                                    validateTrigger: 'onBlur'
                                 })(
                                     <Input placeholder="输入调用名称" />
                                 )}
@@ -175,10 +208,10 @@ class ConfForm extends React.Component{
                         </Col>
                         <Col span={6}>
                             <FormItem label="组名称">
-                                {getFieldDecorator('groupName',{
+                                {getFieldDecorator('groupName', {
 
                                 })(
-                                    <Input  placeholder="组名称" />
+                                    <Input placeholder="组名称" />
                                 )}
                             </FormItem>
                         </Col>
@@ -193,11 +226,11 @@ class ConfForm extends React.Component{
                     <Row gutter={24}>
                         <Col span={6}>
                             <FormItem label="请求方法">
-                                {getFieldDecorator('method',{
-                                    rules: [{ required: this.props.invokeType==='1'?true:false, message: '此项为必填项!!' }],
-                                    initialValue:'get'
+                                {getFieldDecorator('method', {
+                                    rules: [{ required: this.props.invokeType === '1' ? true : false, message: '此项为必填项!!' }],
+                                    initialValue: 'get'
                                 })(
-                                    <Select disabled={this.props.invokeType==='1'?false:true} onChange={null}>
+                                    <Select disabled={this.props.invokeType === '1' ? false : true} onChange={null}>
                                         <Option key="get">GET</Option>
                                         <Option key="post">POST</Option>
                                         <Option key="put">PUT</Option>
@@ -208,12 +241,12 @@ class ConfForm extends React.Component{
                         </Col>
                         <Col span={6}>
                             <FormItem label="关联请求">
-                                {getFieldDecorator('next',{
-                                    rules: [{ required: this.props.invokeType==='2'?true:false, message: '此项为必填项!!' }],
+                                {getFieldDecorator('next', {
+                                    rules: [{ required: this.props.invokeType === '2' ? true : false, message: '此项为必填项!!' }],
                                 })(
-                                    <Select  onChange={null}  mode="multiple" optionFilterProp="children">
+                                    <Select onChange={null} mode="multiple" optionFilterProp="children">
                                         {
-                                            this.state.next.map((o,i)=><Option key={o.id}>{o.name}</Option>)
+                                            this.state.next.map((o, i) => <Option key={o.id}>{o.name}</Option>)
                                         }
                                     </Select>
                                 )}
@@ -221,12 +254,13 @@ class ConfForm extends React.Component{
                         </Col>
                         <Col span={12}>
                             <FormItem label="URL">
-                                {getFieldDecorator('url',{
-                                    rules: [{ required: this.props.invokeType==='1'?true:false, message: 'url不符合规范',
+                                {getFieldDecorator('url', {
+                                    rules: [{
+                                        required: this.props.invokeType === '1' ? true : false, message: 'url不符合规范',
                                         //pattern: /(https?|ftp|file):\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/
                                     }],
                                 })(
-                                    <Input disabled={this.props.invokeType==='1'?false:true} placeholder="输入请求URL" />
+                                    <Input disabled={this.props.invokeType === '1' ? false : true} placeholder="输入请求URL" />
                                 )}
                             </FormItem>
                         </Col>
@@ -234,38 +268,38 @@ class ConfForm extends React.Component{
                     <Row gutter={24}>
                         <Col span={12}>
                             <div>
-                                <div style={{marginBottom:'5px',marginTop:'10px'}}>请求头</div>
+                                <div style={{ marginBottom: '5px', marginTop: '10px' }}>请求头</div>
                                 <CodeMirror
                                     value={this.headMirrValue}
                                     options={
                                         {
-                                            mode:'json',
+                                            mode: 'json',
                                             theme: 'material',
                                             lineNumbers: true
                                         }
                                     }
                                     onChange={(editor, data, value) => {
                                         console.log('onChange head');
-                                        this.headMirrValue=value;
+                                        this.headMirrValue = value;
                                     }}
                                 />
                             </div>
                         </Col>
                         <Col span={12}>
                             <div>
-                                <div style={{marginBottom:'5px',marginTop:'10px'}}>请求体</div>
+                                <div style={{ marginBottom: '5px', marginTop: '10px' }}>请求体</div>
                                 <CodeMirror
                                     value={this.bodyMirrValue}
                                     options={
                                         {
-                                            mode:'json',
+                                            mode: 'json',
                                             theme: 'material',
                                             lineNumbers: true
                                         }
                                     }
                                     onChange={(editor, data, value) => {
                                         console.log('onChange body');
-                                        this.bodyMirrValue=value;
+                                        this.bodyMirrValue = value;
                                     }}
                                 />
                             </div>
@@ -274,21 +308,21 @@ class ConfForm extends React.Component{
                     <Row>
                         <Col span={24}>
                             <div>
-                                <div style={{marginBottom:'5px',marginTop:'10px'}}>解析函数</div>
+                                <div style={{ marginBottom: '5px', marginTop: '10px' }}>解析函数</div>
                                 <CodeMirror
                                     ref="editorFun"
                                     value={this.funMirrValue}
                                     options={
                                         {
-                                            mode:'javascript',
+                                            mode: 'javascript',
                                             theme: 'material',
                                             lineNumbers: true,
-                                            extraKeys: {"Ctrl": "autocomplete"},
+                                            extraKeys: { "Ctrl": "autocomplete" },
                                         }
                                     }
                                     onChange={(editor, data, value) => {
                                         console.log('onChange fun');
-                                        this.funMirrValue=value;
+                                        this.funMirrValue = value;
                                     }}
                                 />
                             </div>
@@ -308,4 +342,4 @@ class ConfForm extends React.Component{
     }
 }
 
-export default  Form.create()(ConfForm);
+export default Form.create()(ConfForm);

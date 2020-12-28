@@ -64,73 +64,73 @@ export const log = (target, name, descriptor) => {
   return descriptor;
 };
 
-export const baseUrl='http://127.0.0.1:7777';
-//export const baseUrl='';
+export const baseUrl = 'http://127.0.0.1:7001';
+//export const baseUrl = '';
 
 
 
-export  function request2 (method, url, body) {
-    method = method.toUpperCase();
-    if (method === 'GET') {
-        // fetch的GET不允许有body，参数只能放在url中
-        body = undefined;
-    } else {
-        body = body && JSON.stringify(body);
-    }
-    return fetch(url, {
-        method,
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            //'Access-Token': sessionStorage.getItem('access-token') || '' // 从sessionStorage中获取access token
-        },
-        body
-    })
-        .then((res) => {
-            if (res.status === 401) {
-                //hashHistory.push('/login');
-                return Promise.reject('Unauthorized.');
-            } else {
-                const token = res.headers.get('access-token');
-                if (token) {
-                    sessionStorage.setItem('access_token', token);
-                }
-                //console.log(res.json());
-                return res.json();
-            }
-        });
+export function request2(method, url, body) {
+  method = method.toUpperCase();
+  if (method === 'GET') {
+    // fetch的GET不允许有body，参数只能放在url中
+    body = undefined;
+  } else {
+    body = body && JSON.stringify(body);
+  }
+  return fetch(url, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      //'Access-Token': sessionStorage.getItem('access-token') || '' // 从sessionStorage中获取access token
+    },
+    body
+  })
+    .then((res) => {
+      if (res.status === 401) {
+        //hashHistory.push('/login');
+        return Promise.reject('Unauthorized.');
+      } else {
+        const token = res.headers.get('access-token');
+        if (token) {
+          sessionStorage.setItem('access_token', token);
+        }
+        //console.log(res.json());
+        return res.json();
+      }
+    });
 }
 
 
 export function request(method, url, body) {
-    method = method.toUpperCase();
-    let params;
-    if (method === 'GET') {
-        // fetch的GET不允许有body，参数只能放在url中
-        params = body;
-        body=undefined;
+  method = method.toUpperCase();
+  let params;
+  if (method === 'GET') {
+    // fetch的GET不允许有body，参数只能放在url中
+    params = body;
+    body = undefined;
+  } else {
+    body = body //&& JSON.stringify(body);
+  }
+  return axios({
+    url: url,
+    method: method,
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    data: body,
+    params: params
+  }).then((res) => {
+    if (res.status === 401) {
+      return Promise.reject('Unauthorized.');
     } else {
-        body = body //&& JSON.stringify(body);
+      return res.data;
     }
-    return axios({
-        url:url,
-        method:method,
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-        },
-        data:body,
-        params:params
-    }).then((res) => {
-        if (res.status === 401) {
-            return Promise.reject('Unauthorized.');
-        } else {
-            return res.data;
-        }
-    }).catch((err)=>{
-        window.history.go('/invoke');
-        return Promise.reject('Unauthorized.');
-    });
+  }).catch((err) => {
+    window.history.go('/invoke');
+    return Promise.reject('Unauthorized.');
+  });
 }
 
 export const get = url => request('GET', url);
@@ -155,25 +155,24 @@ export const convertGiga = (byte) => {
 };
 
 export const convertGigaFormat = (byte) => {
-    const data=convertGiga(byte);
-    return data.number+data.unit;
+  const data = convertGiga(byte);
+  return data.number + data.unit;
 };
 
-export const dateFtt=(fmt,date)=>
-{ //author: meizz
-    var o = {
-        "M+" : date.getMonth()+1,                 //月份
-        "d+" : date.getDate(),                    //日
-        "h+" : date.getHours(),                   //小时
-        "m+" : date.getMinutes(),                 //分
-        "s+" : date.getSeconds(),                 //秒
-        "q+" : Math.floor((date.getMonth()+3)/3), //季度
-        "S"  : date.getMilliseconds()             //毫秒
-    };
-    if(/(y+)/.test(fmt))
-        fmt=fmt.replace(RegExp.$1, (date.getFullYear()+"").substr(4 - RegExp.$1.length));
-    for(var k in o)
-        if(new RegExp("("+ k +")").test(fmt))
-            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
-    return fmt;
+export const dateFtt = (fmt, date) => { //author: meizz
+  var o = {
+    "M+": date.getMonth() + 1,                 //月份
+    "d+": date.getDate(),                    //日
+    "h+": date.getHours(),                   //小时
+    "m+": date.getMinutes(),                 //分
+    "s+": date.getSeconds(),                 //秒
+    "q+": Math.floor((date.getMonth() + 3) / 3), //季度
+    "S": date.getMilliseconds()             //毫秒
+  };
+  if (/(y+)/.test(fmt))
+    fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+  for (var k in o)
+    if (new RegExp("(" + k + ")").test(fmt))
+      fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+  return fmt;
 };

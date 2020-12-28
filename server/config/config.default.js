@@ -16,19 +16,27 @@ module.exports = appInfo => {
 
     config.cluster = {
         listen: {
-            port: 7777,
+            port: 7001,
             //hostname: '127.0.0.1',
             // path: '/var/run/egg.sock',
         }
     };
 
+    config.middleware = [
+        'url'
+    ];
+
+    config.url = {
+        match: /\/invoke\//,
+    };
+
     config.mysql = {
         client: {
-            host: '192.168.1.11',
+            host: '49.4.13.146',
             port: '3306',
             user: 'root',
             password: '1q2w3e4r',
-            database: 'isp_v2'
+            database: 'restful'
         },
         // 是否加载到 app 上，默认开启
         app: true,
@@ -36,14 +44,14 @@ module.exports = appInfo => {
         agent: true,
     };
 
-    // config.redis = {
-    //     client: {
-    //         port: 6379,          // Redis port
-    //         host: '127.0.0.1',   // Redis host
-    //         password: '',
-    //         db: 0,
-    //     },
-    // };
+    config.redis = {
+        client: {
+            port: 6379,          // Redis port
+            host: '127.0.0.1',   // Redis host
+            password: '',
+            db: 0,
+        },
+    };
 
     config.security = {
         csrf: {
@@ -59,6 +67,19 @@ module.exports = appInfo => {
         allowMethods: 'GET,PUT,POST,DELETE,OPTIONS',
         origin: '*',
     };
+
+    config.systemInfo = [
+        {
+            systemId: 1,
+            url: 'http://218.63.110.21:8090',
+            name: '昭通中联his'
+        },
+        {
+            systemId: 2,
+            url: 'http://218.63.110.21:8090',
+            name: '云大东软his'
+        }
+    ]
 
 
     return config;

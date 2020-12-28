@@ -175,16 +175,16 @@ var RestfulService = function (_Service) {
 
                                 recursionLevel++;
                                 invokeEntitys = this.app.invokeEntitys;
-                                nextEntitys = //await this.app.mysql.select('t_invoke_info',{where: {  id: entity.next.split(',') }});
-                                invokeEntitys.filter(function (d) {
-                                    var flag = false;
-                                    entity.next.split(',').forEach(function (i) {
-                                        if (i === d.id + '') {
-                                            flag = true;
-                                        }
+                                nextEntitys = //await this.app.mysql.select('invoke_info',{where: {  id: entity.next.split(',') }});
+                                    invokeEntitys.filter(function (d) {
+                                        var flag = false;
+                                        entity.next.split(',').forEach(function (i) {
+                                            if (i === d.id + '') {
+                                                flag = true;
+                                            }
+                                        });
+                                        return flag;
                                     });
-                                    return flag;
-                                });
                                 _loop = /*#__PURE__*/regeneratorRuntime.mark(function _loop(netxEn) {
                                     var currentCount, promises;
                                     return regeneratorRuntime.wrap(function _loop$(_context3) {
@@ -273,7 +273,7 @@ var RestfulService = function (_Service) {
                                 return _context4.stop();
                         }
                     }
-                }, _callee3, this, [[11, 17], [34, 44, 48, 56], [49,, 51, 55]]);
+                }, _callee3, this, [[11, 17], [34, 44, 48, 56], [49, , 51, 55]]);
             }));
 
             function _invoke(_x5, _x6, _x7, _x8, _x9, _x10) {

@@ -4,10 +4,10 @@ module.exports = app => {
         console.log('init app');
         //console.log(app.config.redis.client)
 
-        if(app.config.redis.client){
-            const invokeEntitys=await app.mysql.query(`select * from invoke_info`);
-            await app.redis.set('invokeEntitys', JSON.stringify(invokeEntitys));
-        }
+        // if(app.config.redis.client){
+        //     const invokeEntitys=await app.mysql.query(`select * from invoke_info`);
+        //     await app.redis.set('invokeEntitys', JSON.stringify(invokeEntitys));
+        // }
         console.log('app start');
 
     });
@@ -18,6 +18,6 @@ module.exports = app => {
 
     app.messenger.on('invokeEntitys', data => {
         console.log('invokeEntitys');
-        app.invokeEntitys=data;
+        app.invokeEntitys = data;
     });
 };
