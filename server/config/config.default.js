@@ -32,7 +32,7 @@ module.exports = appInfo => {
 
     config.mysql = {
         client: {
-            host: '127.0.0.1',
+            host: '49.4.13.146',
             port: '3306',
             user: 'root',
             password: '1q2w3e4r',
@@ -71,12 +71,12 @@ module.exports = appInfo => {
     config.systemInfo = [
         {
             systemId: 1,
-            url: 'http://127.0.0.1.21:8090',
+            url: 'http://218.63.110.21:8090',
             name: '昭通中联his'
         },
         {
             systemId: 2,
-            url: 'http://127.0.0.1:8090',
+            url: 'http://218.63.110.21:8090',
             name: '云大东软his'
         }
     ]
