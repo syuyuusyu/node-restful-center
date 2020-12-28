@@ -4,11 +4,11 @@
 本代码用于将通过页面配置将多个接口按照使用者的需要进行封装,并发布为一个统一的接口
 
 # useage
-代码需要node和MySQL环境,只适用于返回JSON格式的restful接口  
-首先在 /node-restful-center/server/config/config.default.js 中配置mysql的链接信息  
+代码运行需要node,MySQL,Redis环境,只适用于返回JSON格式的restful接口  
+首先在 /node-restful-center/server/config/config.default.js 中配置mysql和redis的链接信息  
 在 /node-restful-center/server 目录下,执行 `npm i` 安装所需依赖  
 相同目录下执行 `npm start`启动程序  
-通过 http://127.0.0.1:7777/index 访问程序配置页面  
+通过 http://127.0.0.1:7001/index 访问程序配置页面  
 
 # example
 下面通过一个列子说明程序的使用方法  
@@ -51,7 +51,7 @@ body:
 
 配置参数中的@为占位符,在调用时需要用具体的参数替换,点击上图页面的"测试"按钮,将出现如下页面:图2  
 ![](./readmePic/params.png)
-这里出现的是用@占位符标记的参数,在/node-restful-center/server/app/controller/mock.js中,mock了一份调用接口所需的数据,所以这里的keystoneIP就是本地服务的地址127.0.0.1:7777,同时由于mock的关系,name和password可以随便填,在不选中"是否关联调用"的情况下,点击上图页面的"测试",将调用该接口并出现如下页面:图3
+这里出现的是用@占位符标记的参数,在/node-restful-center/server/app/controller/mock.js中,mock了一份调用接口所需的数据,所以这里的keystoneIP就是本地服务的地址127.0.0.1:7001,同时由于mock的关系,name和password可以随便填,在不选中"是否关联调用"的情况下,点击上图页面的"测试",将调用该接口并出现如下页面:图3
 ![](./readmePic/invokeResult.png)
 这个页面除了展示模拟(请求由后台程序调用,并不是页面请求的)请求返回的结果,主要是用来测试解析函数的,下面就介绍解析下解析函数的用法,  
 解析函数接收如下参数:responsebody,responsehead,responsestatus,requesthead,requestdata,url,这几个参数按照字面意思比较好理解,整个解析函数的目的就是让使用者按照自己的业务需求,将上面几个参数中的信息重新组合,转换得到更易读或其他调用程序更好理解的JSON格式,解析函数支持ES6语法,图3的解析函数很简单,就是获取响应头中'x-subject-token'中的token,并按照`[{token:'XXXX'}]`的格式返回,需要特别说明的是,在页面模拟调用的环境中,页面只能得到responsebody这一个参数,其他的参数只有在后台程序调用中才能得到,所以如果现在点击图3的"测试解析函数"按钮,将会得到一个head undefined的异常;
@@ -60,7 +60,7 @@ body:
 可以看到返回结果变成了解析函数处理后的形式,图二中的"是否关联调用"如果选中,那么程序将在后台调用解析函数(如上面的介绍,后台程序才能得到responsehead),同时,如果图1页面中"关联请求"一项中的**server_list**在勾选状态的话,在获取到token后,程序会继续调用**server_list**接口,该接口的配置信息如下:图5  
 ![图5](./readmePic/serverlist.png)  
 **server_list**用来查询toekn对应用户的云机列表,在图5的配置中,需要两个参数(使用@占位):ComputeIP,token,这里的token已经在上一步的调用中得到,但ComputeIP还未知,所以这时关联调用**server_list**接口的话,程序会报错,当然也可以直接吧ComputeIP写死在**server_list**的配置中,这样就可以直接经行关联调用了;
-现在单独调用**server_list**接口,在图5页面点击"测试"按钮,在弹出的对话框中填写token和ComputeIP(mock环境下仍然是127.0.0.1:7777),获得如下响应:
+现在单独调用**server_list**接口,在图5页面点击"测试"按钮,在弹出的对话框中填写token和ComputeIP(mock环境下仍然是127.0.0.1:7001),获得如下响应:
 ```
 {
   "servers": [
@@ -132,7 +132,7 @@ function parse(obj){
     }
 ]
 ```
-从返回的结果可以看到,当前用户下有3台云机,下一步就可以根据得到的云机ID(instanceId)去调用下一个接口**monitor_info**(获取虚拟机信息指标),通过**monitor_info**的配置页面可以看到调用该接口需要3个参数:MetricIP,token,instanceId,这里MetricIP一样为"127.0.0.1:7777".  
+从返回的结果可以看到,当前用户下有3台云机,下一步就可以根据得到的云机ID(instanceId)去调用下一个接口**monitor_info**(获取虚拟机信息指标),通过**monitor_info**的配置页面可以看到调用该接口需要3个参数:MetricIP,token,instanceId,这里MetricIP一样为"127.0.0.1:7001".  
 需要特别说明的是,只有当上一级的接口返回为JSON数组时,才会关联调用下一级接口,比如获取token的接口返回的是`[{token:'XXXX'}]`,如果返回的是`[{token:'x1'},{token:'x2'}]`,那么程序就分别传递token x1,x2调用**server_list**接口两次,在这里,就意味着程序会传递不同的instanceId调用**monitor_info**接口3次.
 **monitor_info**接口返回类似JSON(省略了某些内容):
 ```
@@ -159,15 +159,15 @@ function parse(obj){
 ```
 结果中的`"vcpus": "ad8826fe-f9fc-41a8-b467-76a501e52dda"`,就是下一个接口**monitor_detail**所需的参数propertyId,同样使用对应的解析函数处理过上面的JSON后,处理后的结果作为参数用来调用**monitor_detail**接口.  
 这时对于接口调用相关的配置就完成了,其实也就是配置每个接口的url,head,body和解析函数,用@站位符替代调用时传入的参数,用解析函数将调用返回的信息转化为自己需要的格式,同时配置关联调用的接口,这样在当前调用结束后,将当前调用获得的信息作为关联调用所需的参数再去调用关联的接口,在上面的列子中就是这样的调用顺序:**keystoneToken**->**server_list**->**monitor_info**->**monitor_detail**  
-接下来需要配置一个"可调用接口"(这里已经配置好一个**monitor_api**),"可调用接口"是由程序发布出来的一个POST接口,可以通过http://{本机IP}:7777/invoke/{可调用接口名称}来访问,在这里就是http://127.0.0.1:7777/invoke/monitor_api  
+接下来需要配置一个"可调用接口"(这里已经配置好一个**monitor_api**),"可调用接口"是由程序发布出来的一个POST接口,可以通过http://{本机IP}:7001/invoke/{可调用接口名称}来访问,在这里就是http://127.0.0.1:7001/invoke/monitor_api  
 在调用**monitor_api**时,就可以在请求体中传入其关联接口所需的参数,对于当前的列子,就是
 ```
 {
 	"name":"S01admin",
 	"password":"S01adminyndkch",
-	"keystoneIP":"127.0.0.1:7777",
-	"MetricIP":"127.0.0.1:7777",
-	"ComputeIP":"127.0.0.1:7777"
+	"keystoneIP":"127.0.0.1:7001",
+	"MetricIP":"127.0.0.1:7001",
+	"ComputeIP":"127.0.0.1:7001"
 }
 ```
 可以看到**monitor_api**的关联接口是**keystoneToken**,也就是说当调用**monitor_api**时,程序会去调用**keystoneToken**,调用**keystoneToken**完成后,又会去调用**keystoneToken**的关联接口,当所有的接口都完成调用时,所有结果组成一个大的JSON,作为**monitor_api**的结果返回,返回示列如下(有所省略):  
