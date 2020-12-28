@@ -4,8 +4,8 @@
 本代码用于将通过页面配置将多个接口按照使用者的需要进行封装,并发布为一个统一的接口
 
 # useage
-代码需要node和MySQL环境,只适用于返回JSON格式的restful接口  
-首先在 /node-restful-center/server/config/config.default.js 中配置mysql的链接信息  
+代码运行需要node,MySQL,Redis环境,只适用于返回JSON格式的restful接口  
+首先在 /node-restful-center/server/config/config.default.js 中配置mysql和redis的链接信息  
 在 /node-restful-center/server 目录下,执行 `npm i` 安装所需依赖  
 相同目录下执行 `npm start`启动程序  
 通过 http://127.0.0.1:7001/index 访问程序配置页面  
